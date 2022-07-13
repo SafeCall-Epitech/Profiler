@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -21,8 +20,6 @@ func getCredentials() string {
 		return ""
 	}
 
-	fmt.Println("The File is opened successfully...")
-
 	defer fileContent.Close()
 
 	byteResult, _ := ioutil.ReadAll(fileContent)
@@ -35,8 +32,37 @@ func getCredentials() string {
 
 func RegisterHandler(id, psw string) bool {
 	uri := getCredentials()
+	users := GetUsers(uri)
+
+	if len(id) < 5 {
+		return false // Id too short
+	}
+
+	if len(psw) < 7 {
+		return false // password too short
+	}
+
+	for _, info := range users {
+		if info["login"] == id {
+			return false // Id already taken
+		}
+	}
+
 	if AddUser(uri, id, psw) != true {
 		return false
 	}
 	return true
+}
+
+func LoginHandler(id, psw string) bool {
+	uri := getCredentials()
+	users := GetUsers(uri)
+
+	for _, info := range users {
+		if info["login"] == id && info["psw"] == psw {
+			return true
+		}
+	}
+
+	return false
 }

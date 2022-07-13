@@ -25,7 +25,7 @@ func main() {
 	r := gin.Default()
 	r.Use(CORS())
 
-	// r.GET("/login/:name/:psw", login)
+	r.GET("/login/:login/:psw", login)
 
 	r.POST("/register/:login/:psw", register)
 
@@ -33,14 +33,31 @@ func main() {
 }
 
 func login(c *gin.Context) {
+	login := c.Param("login")
+	psw := c.Param("psw")
+
+	if LoginHandler(login, psw) != true {
+		c.JSON(200, gin.H{
+			"failed": "404",
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"success": "200",
+		})
+	}
 }
 
 func register(c *gin.Context) {
 	login := c.Param("login")
 	psw := c.Param("psw")
-	RegisterHandler(login, psw)
 
-	c.JSON(200, gin.H{
-		"success": "200",
-	})
+	if RegisterHandler(login, psw) != true {
+		c.JSON(200, gin.H{
+			"failed": "404",
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"success": "200",
+		})
+	}
 }
