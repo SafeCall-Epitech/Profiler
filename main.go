@@ -29,7 +29,7 @@ func main() {
 
 	r.POST("/register/:login/:psw", register)
 
-	r.Run()
+	r.Run(":8081")
 }
 
 func login(c *gin.Context) {
@@ -51,9 +51,11 @@ func register(c *gin.Context) {
 	login := c.Param("login")
 	psw := c.Param("psw")
 
-	if RegisterHandler(login, psw) != true {
+	resp := RegisterHandler(login, psw)
+
+	if resp != "200" {
 		c.JSON(200, gin.H{
-			"failed": "404",
+			"failed": resp,
 		})
 	} else {
 		c.JSON(200, gin.H{

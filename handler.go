@@ -30,28 +30,28 @@ func getCredentials() string {
 	return res.Uri
 }
 
-func RegisterHandler(id, psw string) bool {
+func RegisterHandler(id, psw string) string {
 	uri := getCredentials()
 	users := GetUsers(uri)
 
 	if len(id) < 5 {
-		return false // Id too short
+		return "id too short" // Id too short
 	}
 
 	if len(psw) < 7 {
-		return false // password too short
+		return "password too short" // password too short
 	}
 
 	for _, info := range users {
 		if info["login"] == id {
-			return false // Id already taken
+			return "Id already taken" // Id already taken
 		}
 	}
 
 	if AddUser(uri, id, psw) != true {
-		return false
+		return "Unknown error"
 	}
-	return true
+	return "200"
 }
 
 func LoginHandler(id, psw string) bool {
