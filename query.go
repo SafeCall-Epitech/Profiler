@@ -10,7 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func AddUser(uri, login, psw string) bool {
+func AddUser(uri, login, psw, user string) bool {
 	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
 	if err != nil {
 		log.Fatal(err)
@@ -30,6 +30,7 @@ func AddUser(uri, login, psw string) bool {
 	podcastsCollection.InsertOne(ctx, bson.D{
 		{Key: "login", Value: login},
 		{Key: "psw", Value: psw},
+		{Key: "data", Value: user},
 	})
 	return true
 }
