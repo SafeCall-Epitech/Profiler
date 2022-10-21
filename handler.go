@@ -5,6 +5,8 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+
+	"google.golang.org/protobuf/proto"
 )
 
 type Credentials struct {
@@ -30,6 +32,19 @@ func getCredentials() string {
 	return res.Uri
 }
 
+func userToProto(username, psw string) UserMessage {
+	user := UserMessage{
+		Id:       1,
+		Username: username,
+		Password: psw,
+		Settings: &SettingsMessage{
+			DoNotDisturb: true,
+			Language:     "eng",
+		},
+	}
+	return user
+}
+
 func RegisterHandler(id, psw string) string {
 	uri := getCredentials()
 	users := GetUsers(uri)
@@ -48,7 +63,9 @@ func RegisterHandler(id, psw string) string {
 		}
 	}
 
-	if AddUser(uri, id, psw) != true {
+	protoUser := userToProto(id, psw)
+	binary, _ := proto.Marshal(&protoUser)
+	if AddUser(uri, id, psw, string(binary)) != true {
 		return "Unknown error"
 	}
 	return "200"
