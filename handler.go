@@ -5,8 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-
-	"google.golang.org/protobuf/proto"
+	"strings"
 )
 
 type Credentials struct {
@@ -45,41 +44,24 @@ func userToProto(username, psw string) UserMessage {
 	return user
 }
 
-func RegisterHandler(id, psw string) string {
+func buildProfile(login, userID string) string {
 	uri := getCredentials()
-	users := GetUsers(uri)
-
-	if len(id) < 5 {
-		return "id too short" // Id too short
+	if registerProfile(uri, login, userID) != true {
+		return "Internal error"
 	}
-
-	if len(psw) < 7 {
-		return "password too short" // password too short
-	}
-
-	for _, info := range users {
-		if info["login"] == id {
-			return "Id already taken" // Id already taken
-		}
-	}
-
-	protoUser := userToProto(id, psw)
-	binary, _ := proto.Marshal(&protoUser)
-	if AddUser(uri, id, psw, string(binary)) != true {
-		return "Unknown error"
-	}
-	return "200"
+	return "Success"
 }
 
-func LoginHandler(id, psw string) bool {
+func handleDescription(endpoint, userID, data string) string {
 	uri := getCredentials()
-	users := GetUsers(uri)
-
-	for _, info := range users {
-		if info["login"] == id && info["psw"] == psw {
-			return true
-		}
+	if endpoint == "Description" && len(data) > 350 {
+		return "Too long description"
+	}
+	if endpoint == "FullName" && len(data) > 30 {
+		return "Too long Full Name"
 	}
 
-	return false
+	parsedData := strings.ReplaceAll(data, "_", " ")
+	_ = publishDescription(uri, endpoint, userID, parsedData)
+	return "success"
 }

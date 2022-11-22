@@ -25,41 +25,56 @@ func main() {
 	r := gin.Default()
 	r.Use(CORS())
 
-	r.GET("/login/:login/:psw", login)
+	r.POST("/create/:login/:userID", createProfile)
+	r.POST("/description/:userID/:description", editDescription)
+	r.POST("/FullName/:userID/:FullName", editFullName)
 
-	r.POST("/register/:login/:psw", register)
-
-	r.Run()
+	r.Run(":8081")
 }
 
-func login(c *gin.Context) {
+func createProfile(c *gin.Context) {
 	login := c.Param("login")
-	psw := c.Param("psw")
-
-	if LoginHandler(login, psw) != true {
+	id := c.Param("userID")
+	resp := buildProfile(login, id)
+	if resp != "success" {
 		c.JSON(200, gin.H{
-			"failed": "404",
+			"Internal error ": "503",
 		})
 	} else {
 		c.JSON(200, gin.H{
-			"success": "200",
+			"Success ": "200",
 		})
 	}
 }
 
-func register(c *gin.Context) {
-	login := c.Param("login")
-	psw := c.Param("psw")
+func editDescription(c *gin.Context) {
+	userID := c.Param("userID")
+	description := c.Param("description")
 
-	resp := RegisterHandler(login, psw)
-
-	if resp != "200" {
-		c.JSON(200, gin.H{
-			"failed": resp,
+	resp := handleDescription("Description", userID, description)
+	if resp != "success" {
+		c.JSON(503, gin.H{
+			"Internal error ": "503",
 		})
 	} else {
 		c.JSON(200, gin.H{
-			"success": "200",
+			"Success ": "200",
+		})
+	}
+}
+
+func editFullName(c *gin.Context) {
+	userID := c.Param("userID")
+	FullName := c.Param("FullName")
+
+	resp := handleDescription("FullName", userID, FullName)
+	if resp != "success" {
+		c.JSON(503, gin.H{
+			"Internal error ": "503",
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"Success ": "200",
 		})
 	}
 }
