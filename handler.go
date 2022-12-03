@@ -52,7 +52,7 @@ func buildProfile(login, userID string) string {
 	return "Success"
 }
 
-func handleDescription(endpoint, userID, data string) string {
+func handleProfileEdition(endpoint, userID, data string) string {
 	uri := getCredentials()
 	if endpoint == "Description" && len(data) > 350 {
 		return "Too long description"
@@ -60,8 +60,20 @@ func handleDescription(endpoint, userID, data string) string {
 	if endpoint == "FullName" && len(data) > 30 {
 		return "Too long Full Name"
 	}
+	if endpoint == "PhoneNB" && len(data) > 15 {
+		return "Too long PhoneNB"
+	}
+	if endpoint == "Email" && len(data) > 50 {
+		return "Too long Email"
+	}
 
-	parsedData := strings.ReplaceAll(data, "_", " ")
-	_ = publishDescription(uri, endpoint, userID, parsedData)
+	parsedData := strings.ReplaceAll(data, "_", " ") // FIXME
+	_ = publishProfileUpdates(uri, endpoint, userID, parsedData)
 	return "success"
+}
+
+func getProfilehandler(userID string) string {
+	uri := getCredentials()
+	getUserProfile(uri, userID)
+	return "f"
 }

@@ -25,9 +25,13 @@ func main() {
 	r := gin.Default()
 	r.Use(CORS())
 
+	r.GET("/Profile/:userID", getProfile)
+
 	r.POST("/create/:login/:userID", createProfile)
 	r.POST("/description/:userID/:description", editDescription)
 	r.POST("/FullName/:userID/:FullName", editFullName)
+	r.POST("/PhoneNB/:userID/:PhoneNB", editPhoneNB)
+	r.POST("/Email/:userID/:email", editEmail)
 
 	r.Run(":8081")
 }
@@ -38,7 +42,7 @@ func createProfile(c *gin.Context) {
 	resp := buildProfile(login, id)
 	if resp != "success" {
 		c.JSON(200, gin.H{
-			"Internal error ": "503",
+			"Internal error ": resp,
 		})
 	} else {
 		c.JSON(200, gin.H{
@@ -51,10 +55,10 @@ func editDescription(c *gin.Context) {
 	userID := c.Param("userID")
 	description := c.Param("description")
 
-	resp := handleDescription("Description", userID, description)
+	resp := handleProfileEdition("Description", userID, description)
 	if resp != "success" {
 		c.JSON(503, gin.H{
-			"Internal error ": "503",
+			"Internal error ": resp,
 		})
 	} else {
 		c.JSON(200, gin.H{
@@ -67,14 +71,61 @@ func editFullName(c *gin.Context) {
 	userID := c.Param("userID")
 	FullName := c.Param("FullName")
 
-	resp := handleDescription("FullName", userID, FullName)
+	resp := handleProfileEdition("FullName", userID, FullName)
 	if resp != "success" {
 		c.JSON(503, gin.H{
-			"Internal error ": "503",
+			"Internal error ": resp,
 		})
 	} else {
 		c.JSON(200, gin.H{
 			"Success ": "200",
+		})
+	}
+}
+
+func editPhoneNB(c *gin.Context) {
+	userID := c.Param("userID")
+	PhoneNB := c.Param("PhoneNB")
+
+	resp := handleProfileEdition("PhoneNB", userID, PhoneNB)
+	if resp != "success" {
+		c.JSON(503, gin.H{
+			"Internal error ": resp,
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"Success ": "200",
+		})
+	}
+}
+
+func editEmail(c *gin.Context) {
+	userID := c.Param("userID")
+	Email := c.Param("email")
+
+	resp := handleProfileEdition("Email", userID, Email)
+	if resp != "success" {
+		c.JSON(503, gin.H{
+			"Internal error ": resp,
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"Success ": "200",
+		})
+	}
+}
+
+func getProfile(c *gin.Context) {
+	userID := c.Param("userID")
+	resp := getProfilehandler(userID)
+
+	if resp == "success" {
+		c.JSON(503, gin.H{
+			"Success ": resp,
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"Failed ": "404",
 		})
 	}
 }

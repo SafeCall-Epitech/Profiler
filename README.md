@@ -1,15 +1,21 @@
-# Authentificator
-This microservice will deals with authentification and data management in the db.
-It will be the only service with open acces to the database.
+# Profiler
+This microservice will deals with the user profiles 
+It will be the only service that can edit, get the user profile data.
 
-It might be called by the API to register or logged in a user.
-it might be called by the microservice dealing with messages to update conversation
+It might be called by the API to create profile data when a 
+new user register himself, or to get some users profile data.
 
+
+# Docker
+    $ docker-compose up (--build)
+```--build only if you edit the code```
 
 
 # Install module with
 
     $ go get go.mongodb.org/mongo-driver/mongo
+
+    User docker ;) 
 
 
 # Errors 
