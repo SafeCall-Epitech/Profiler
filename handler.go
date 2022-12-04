@@ -45,9 +45,9 @@ func userToProto(username, psw string) UserMessage {
 	return user
 }
 
-func buildProfile(login, userID string) string {
+func buildProfile(login string) string {
 	uri := getCredentials()
-	if registerProfile(uri, login, userID) != true {
+	if !registerProfile(uri, login) {
 		return "Internal error"
 	}
 	return "Success"
@@ -73,26 +73,35 @@ func handleProfileEdition(endpoint, userID, data string) string {
 	return "success"
 }
 
-func getProfilehandler(userID string) string {
+func getProfilehandler(userID string) Profile {
 	uri := getCredentials()
 	profileFound := getUserProfile(uri, userID)
 
 	if profileFound != nil {
-		dest := Profile{}
+
+		dest := NewProfile(
+			fmt.Sprint(profileFound["FullName"]),
+			fmt.Sprint(profileFound["Description"]),
+			fmt.Sprint(profileFound["PhoneNB"]),
+			fmt.Sprint(profileFound["Email"]),
+		)
+		return dest
 	}
 
-	return "f"
+	return Profile{}
 }
 
-func searchUserhandler(username string) string {
+func searchUserhandler(username string) map[int]string {
 	uri := getCredentials()
 	results := searchUser(uri, username)
+	m := make(map[int]string)
 
 	fmt.Println(len(results))
-	for _, result := range results {
-		fmt.Println(result)
-		fmt.Println("ID")
-		fmt.Println(result["Id"])
+	for nb, result := range results {
+		m[nb] = fmt.Sprintf(result["Id"].(string))
+		if nb > 4 {
+			return m
+		}
 	}
-	return "nil"
+	return m
 }

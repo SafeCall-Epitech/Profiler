@@ -12,7 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func registerProfile(uri, login, userID string) bool {
+func registerProfile(uri, login string) bool {
 	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
 	if err != nil {
 		log.Fatal(err)
@@ -31,7 +31,7 @@ func registerProfile(uri, login, userID string) bool {
 
 	ProfileCollection.InsertOne(ctx, bson.D{
 		{Key: "FullName", Value: login},
-		{Key: "Id", Value: userID},
+		{Key: "Id", Value: login},
 		{Key: "Description", Value: "Default description"},
 		{Key: "PhoneNB", Value: "none"},
 		{Key: "Email", Value: "none"},
@@ -89,7 +89,6 @@ func getUserProfile(uri, userID string) primitive.M {
 		}
 		log.Fatal(err)
 	}
-	// fmt.Printf("found document %v", result)
 
 	return result
 }
@@ -111,7 +110,9 @@ func searchUser(uri, username string) []primitive.M {
 	quickstartDatabase := client.Database("userData")
 	ProfileCollection := quickstartDatabase.Collection("Profile")
 
-	filter := bson.D{{Key: "FullName", Value: username}}
+	filter := bson.D{{Key: "FullName", Value: bson.D{
+		{Key: "$regex", Value: primitive.Regex{Pattern: username, Options: "i"}},
+	}}}
 	cursor, querr := ProfileCollection.Find(ctx, filter)
 
 	if querr != nil {

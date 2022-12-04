@@ -28,7 +28,8 @@ func main() {
 	r.GET("/Profile/:userID", getProfileEndpoint)
 	r.GET("/search/:username", searchUserEndpoint)
 
-	r.POST("/create/:login/:userID", createProfile)
+	r.POST("/create/:login", createProfile)
+	// r.POST("/create/:login/:userID", createProfile)
 	r.POST("/description/:userID/:description", editDescription)
 	r.POST("/FullName/:userID/:FullName", editFullName)
 	r.POST("/PhoneNB/:userID/:PhoneNB", editPhoneNB)
@@ -39,8 +40,8 @@ func main() {
 
 func createProfile(c *gin.Context) {
 	login := c.Param("login")
-	id := c.Param("userID")
-	resp := buildProfile(login, id)
+	// id := c.Param("userID")
+	resp := buildProfile(login)
 	if resp != "success" {
 		c.JSON(200, gin.H{
 			"Internal error ": resp,
@@ -120,28 +121,16 @@ func getProfileEndpoint(c *gin.Context) {
 	userID := c.Param("userID")
 	resp := getProfilehandler(userID)
 
-	if resp == "success" {
-		c.JSON(503, gin.H{
-			"Success ": resp,
-		})
-	} else {
-		c.JSON(200, gin.H{
-			"Failed ": "404",
-		})
-	}
+	c.JSON(200, gin.H{
+		"Profile ": resp,
+	})
 }
 
 func searchUserEndpoint(c *gin.Context) {
 	userID := c.Param("username")
-	searchUserhandler(userID)
+	resp := searchUserhandler(userID)
 
-	// if resp == "success" {
-	// 	c.JSON(503, gin.H{
-	// 		"Success ": resp,
-	// 	})
-	// } else {
-	// 	c.JSON(200, gin.H{
-	// 		"Failed ": "404",
-	// 	})
-	// }
+	c.JSON(200, gin.H{
+		"Success ": resp,
+	})
 }
