@@ -1,6 +1,6 @@
 package profile
 
-type User struct {
+type Profile struct {
 	FullName    string
 	Id          string
 	Description string

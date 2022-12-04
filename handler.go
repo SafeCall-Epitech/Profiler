@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -74,6 +75,24 @@ func handleProfileEdition(endpoint, userID, data string) string {
 
 func getProfilehandler(userID string) string {
 	uri := getCredentials()
-	getUserProfile(uri, userID)
+	profileFound := getUserProfile(uri, userID)
+
+	if profileFound != nil {
+		dest := Profile{}
+	}
+
 	return "f"
+}
+
+func searchUserhandler(username string) string {
+	uri := getCredentials()
+	results := searchUser(uri, username)
+
+	fmt.Println(len(results))
+	for _, result := range results {
+		fmt.Println(result)
+		fmt.Println("ID")
+		fmt.Println(result["Id"])
+	}
+	return "nil"
 }

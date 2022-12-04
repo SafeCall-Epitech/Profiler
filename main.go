@@ -25,7 +25,8 @@ func main() {
 	r := gin.Default()
 	r.Use(CORS())
 
-	r.GET("/Profile/:userID", getProfile)
+	r.GET("/Profile/:userID", getProfileEndpoint)
+	r.GET("/search/:username", searchUserEndpoint)
 
 	r.POST("/create/:login/:userID", createProfile)
 	r.POST("/description/:userID/:description", editDescription)
@@ -115,7 +116,7 @@ func editEmail(c *gin.Context) {
 	}
 }
 
-func getProfile(c *gin.Context) {
+func getProfileEndpoint(c *gin.Context) {
 	userID := c.Param("userID")
 	resp := getProfilehandler(userID)
 
@@ -128,4 +129,19 @@ func getProfile(c *gin.Context) {
 			"Failed ": "404",
 		})
 	}
+}
+
+func searchUserEndpoint(c *gin.Context) {
+	userID := c.Param("username")
+	searchUserhandler(userID)
+
+	// if resp == "success" {
+	// 	c.JSON(503, gin.H{
+	// 		"Success ": resp,
+	// 	})
+	// } else {
+	// 	c.JSON(200, gin.H{
+	// 		"Failed ": "404",
+	// 	})
+	// }
 }
