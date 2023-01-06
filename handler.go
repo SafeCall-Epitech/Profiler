@@ -2,11 +2,11 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
-
-	"google.golang.org/protobuf/proto"
+	"strings"
 )
 
 type Credentials struct {
@@ -45,41 +45,63 @@ func userToProto(username, psw string) UserMessage {
 	return user
 }
 
-func RegisterHandler(id, psw string) string {
+func buildProfile(login string) string {
 	uri := getCredentials()
-	users := GetUsers(uri)
-
-	if len(id) < 5 {
-		return "id too short" // Id too short
+	if !registerProfile(uri, login) {
+		return "Internal error"
 	}
-
-	if len(psw) < 7 {
-		return "password too short" // password too short
-	}
-
-	for _, info := range users {
-		if info["login"] == id {
-			return "Id already taken" // Id already taken
-		}
-	}
-
-	protoUser := userToProto(id, psw)
-	binary, _ := proto.Marshal(&protoUser)
-	if AddUser(uri, id, psw, string(binary)) != true {
-		return "Unknown error"
-	}
-	return "200"
+	return "Success"
 }
 
-func LoginHandler(id, psw string) bool {
+func handleProfileEdition(endpoint, userID, data string) string {
 	uri := getCredentials()
-	users := GetUsers(uri)
-
-	for _, info := range users {
-		if info["login"] == id && info["psw"] == psw {
-			return true
-		}
+	if endpoint == "Description" && len(data) > 350 {
+		return "Too long description"
+	}
+	if endpoint == "FullName" && len(data) > 30 {
+		return "Too long Full Name"
+	}
+	if endpoint == "PhoneNB" && len(data) > 15 {
+		return "Too long PhoneNB"
+	}
+	if endpoint == "Email" && len(data) > 50 {
+		return "Too long Email"
 	}
 
-	return false
+	parsedData := strings.ReplaceAll(data, "_", " ") // FIXME
+	_ = publishProfileUpdates(uri, endpoint, userID, parsedData)
+	return "success"
+}
+
+func getProfilehandler(userID string) Profile {
+	uri := getCredentials()
+	profileFound := getUserProfile(uri, userID)
+
+	if profileFound != nil {
+
+		dest := NewProfile(
+			fmt.Sprint(profileFound["FullName"]),
+			fmt.Sprint(profileFound["Description"]),
+			fmt.Sprint(profileFound["PhoneNB"]),
+			fmt.Sprint(profileFound["Email"]),
+		)
+		return dest
+	}
+
+	return Profile{}
+}
+
+func searchUserhandler(username string) map[int]string {
+	uri := getCredentials()
+	results := searchUser(uri, username)
+	m := make(map[int]string)
+
+	fmt.Println(len(results))
+	for nb, result := range results {
+		m[nb] = fmt.Sprintf(result["Id"].(string))
+		if nb > 4 {
+			return m
+		}
+	}
+	return m
 }

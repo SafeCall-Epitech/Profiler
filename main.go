@@ -25,41 +25,112 @@ func main() {
 	r := gin.Default()
 	r.Use(CORS())
 
-	r.GET("/login/:login/:psw", login)
+	r.GET("/Profile/:userID", getProfileEndpoint)
+	r.GET("/search/:username", searchUserEndpoint)
 
-	r.POST("/register/:login/:psw", register)
+	r.POST("/create/:login", createProfile)
+	// r.POST("/create/:login/:userID", createProfile)
+	r.POST("/description/:userID/:description", editDescription)
+	r.POST("/FullName/:userID/:FullName", editFullName)
+	r.POST("/PhoneNB/:userID/:PhoneNB", editPhoneNB)
+	r.POST("/Email/:userID/:email", editEmail)
 
-	r.Run()
+	r.Run(":8081")
 }
 
-func login(c *gin.Context) {
+func createProfile(c *gin.Context) {
 	login := c.Param("login")
-	psw := c.Param("psw")
-
-	if LoginHandler(login, psw) != true {
+	// id := c.Param("userID")
+	resp := buildProfile(login)
+	if resp != "success" {
 		c.JSON(200, gin.H{
-			"failed": "404",
+			"Internal error ": resp,
 		})
 	} else {
 		c.JSON(200, gin.H{
-			"success": "200",
+			"Success ": "200",
 		})
 	}
 }
 
-func register(c *gin.Context) {
-	login := c.Param("login")
-	psw := c.Param("psw")
+func editDescription(c *gin.Context) {
+	userID := c.Param("userID")
+	description := c.Param("description")
 
-	resp := RegisterHandler(login, psw)
-
-	if resp != "200" {
-		c.JSON(200, gin.H{
-			"failed": resp,
+	resp := handleProfileEdition("Description", userID, description)
+	if resp != "success" {
+		c.JSON(503, gin.H{
+			"Internal error ": resp,
 		})
 	} else {
 		c.JSON(200, gin.H{
-			"success": "200",
+			"Success ": "200",
 		})
 	}
+}
+
+func editFullName(c *gin.Context) {
+	userID := c.Param("userID")
+	FullName := c.Param("FullName")
+
+	resp := handleProfileEdition("FullName", userID, FullName)
+	if resp != "success" {
+		c.JSON(503, gin.H{
+			"Internal error ": resp,
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"Success ": "200",
+		})
+	}
+}
+
+func editPhoneNB(c *gin.Context) {
+	userID := c.Param("userID")
+	PhoneNB := c.Param("PhoneNB")
+
+	resp := handleProfileEdition("PhoneNB", userID, PhoneNB)
+	if resp != "success" {
+		c.JSON(503, gin.H{
+			"Internal error ": resp,
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"Success ": "200",
+		})
+	}
+}
+
+func editEmail(c *gin.Context) {
+	userID := c.Param("userID")
+	Email := c.Param("email")
+
+	resp := handleProfileEdition("Email", userID, Email)
+	if resp != "success" {
+		c.JSON(503, gin.H{
+			"Internal error ": resp,
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"Success ": "200",
+		})
+	}
+}
+
+func getProfileEndpoint(c *gin.Context) {
+	userID := c.Param("userID")
+	resp := getProfilehandler(userID)
+
+	c.JSON(200, gin.H{
+		"Profile ": resp,
+	})
+}
+
+func searchUserEndpoint(c *gin.Context) {
+	userID := c.Param("username")
+	resp := searchUserhandler(userID)
+
+	c.JSON(200, gin.H{
+		"Success ": resp,
+	})
 }
