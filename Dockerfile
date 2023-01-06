@@ -1,21 +1,20 @@
 # syntax=docker/dockerfile:1
 
-FROM golang:1.17-alpine
+FROM golang:1.17-alpine AS build
 
 WORKDIR /src
 RUN export GO111MODULE="on"
 
-COPY go.mod ./
-COPY go.sum ./
-COPY config.json ./
-RUN go mod download
-
 COPY . .
+RUN ./build.sh
 
-# RUN go build *.go
 
-# RUN go build -o /main.go /handler.go /query.go
+FROM golang:1.17-alpine
+WORKDIR /root
+COPY --from=build /src/profiler .
+COPY --from=build /src/config.json .
+
 
 EXPOSE 8080
 
-# CMD [ "./main" ]
+CMD [ "./profiler" ]
