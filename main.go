@@ -39,7 +39,7 @@ func main() {
 	r.POST("/PhoneNB/:userID/:PhoneNB", editPhoneNB)
 	r.POST("/Email/:userID/:email", editEmail)
 
-	r.POST("/testZMQServer", server)
+	r.GET("/testZMQServer", server)
 
 	r.Run(":8081")
 }
