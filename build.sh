@@ -1,6 +1,6 @@
 #!/bin/sh
 
-apt-get install libzmq3-dev
+apk add --no-cache libzmq-dev
 apk add pkgconfig
 
 go mod download
