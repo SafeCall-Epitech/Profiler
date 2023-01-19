@@ -18,6 +18,9 @@ COPY --from=build /src/libzmq.so .
 COPY --from=build /src/libzmq.so.5 .
 COPY --from=build /src/libzmq.so.5.2.4 .
 
+RUN mv libzmq.so ../usr/lib/
+RUN mv libzmq.so.5 ../usr/lib/
+RUN mv libzmq.so.5.2.4 ../usr/lib/
 
 EXPOSE 8080
 
