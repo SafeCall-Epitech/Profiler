@@ -15,7 +15,7 @@ RUN apt-get remove -y cmake; \
     make -j 8 && make install ; \
     cd .. && rm -rf cmake-3.21.1 cmake-3.21.1.tar.gz
 
-RUN apk add git
+RUN apk add git make cmake 
 
 RUN git clone --branch=master https://github.com/zeromq/libzmq.git ~/libzmq
 RUN cd ~/libzmq ; \
