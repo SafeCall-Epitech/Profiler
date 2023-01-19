@@ -8,7 +8,7 @@ RUN export GO111MODULE="on"
 COPY . .
 
 RUN ./build.sh
-RUN ls  ..
+RUN ls
 
 FROM golang:1.17-alpine
 WORKDIR /root
