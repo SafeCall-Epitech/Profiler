@@ -96,7 +96,6 @@ func searchUserhandler(username string) map[int]string {
 	results := searchUser(uri, username)
 	m := make(map[int]string)
 
-	fmt.Println(len(results))
 	for nb, result := range results {
 		m[nb] = fmt.Sprintf(result["Id"].(string))
 		if nb > 4 {
