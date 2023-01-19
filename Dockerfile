@@ -14,9 +14,9 @@ FROM golang:1.17-alpine
 WORKDIR /root
 COPY --from=build /src/profiler .
 COPY --from=build /src/config.json .
-COPY --from=build /libzmq.so .
-COPY --from=build libzmq.so.5 .
-COPY --from=build libzmq.so.5.2.4 .
+COPY --from=build /src/libzmq.so .
+COPY --from=build /src/libzmq.so.5 .
+COPY --from=build /src/libzmq.so.5.2.4 .
 
 
 EXPOSE 8080
