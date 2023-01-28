@@ -12,7 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func registerProfile(uri, login string) bool {
+func registerProfile(uri, login, email string) bool {
 	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
 	if err != nil {
 		log.Fatal(err)
@@ -34,7 +34,7 @@ func registerProfile(uri, login string) bool {
 		{Key: "Id", Value: login},
 		{Key: "Description", Value: "Default description"},
 		{Key: "PhoneNB", Value: "none"},
-		{Key: "Email", Value: "none"},
+		{Key: "Email", Value: email},
 	})
 	return true
 }

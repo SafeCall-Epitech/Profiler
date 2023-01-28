@@ -32,7 +32,7 @@ func main() {
 	r.GET("/Profile/:userID", getProfileEndpoint)
 	r.GET("/search/:username", searchUserEndpoint)
 
-	r.POST("/create/:login", createProfile)
+	r.POST("/create/:login/:email", createProfile)
 	// r.POST("/create/:login/:userID", createProfile)
 	r.POST("/description/:userID/:description", editDescription)
 	r.POST("/FullName/:userID/:FullName", editFullName)
@@ -69,8 +69,8 @@ func server(c *gin.Context) {
 
 func createProfile(c *gin.Context) {
 	login := c.Param("login")
-	// id := c.Param("userID")
-	resp := buildProfile(login)
+	email := c.Param("email")
+	resp := buildProfile(login, email)
 	if resp != "success" {
 		c.JSON(200, gin.H{
 			"Internal error ": resp,

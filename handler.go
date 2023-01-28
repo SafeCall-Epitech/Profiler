@@ -45,9 +45,9 @@ func userToProto(username, psw string) UserMessage {
 	return user
 }
 
-func buildProfile(login string) string {
+func buildProfile(login, email string) string {
 	uri := getCredentials()
-	if !registerProfile(uri, login) {
+	if !registerProfile(uri, login, email) {
 		return "Internal error"
 	}
 	return "Success"
