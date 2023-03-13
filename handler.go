@@ -117,6 +117,7 @@ func actionFriendHandler(userID, dest, action string) string {
 	} else if action == "rm" {
 		addDelFriend(uri, dest, userID, "$pull")
 		addDelFriend(uri, userID, dest, "$pull")
+		addDelFriend(uri, userID, "?"+dest, "$pull")
 	} else if action == "accept" {
 		addDelFriend(uri, userID, "?"+dest, "$pull")
 		addDelFriend(uri, userID, dest, "$push")
@@ -125,7 +126,7 @@ func actionFriendHandler(userID, dest, action string) string {
 		addDelFriend(uri, dest, userID, "$pull")
 	}
 
-	return ""
+	return "200"
 }
 
 func getFriendsHandler(userID string) []string {

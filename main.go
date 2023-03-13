@@ -173,12 +173,17 @@ func actionFriend(c *gin.Context) {
 	dest := c.Param("dest")
 	action := c.Param("action")
 
-	actionFriendHandler(userID, dest, action)
+	resp := actionFriendHandler(userID, dest, action)
 
-	c.JSON(200, gin.H{
-		"Success ": "You " + action + " your friend",
-	})
-
+	if resp != "200" {
+		c.JSON(503, gin.H{
+			"Not found ": "404",
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"Success ": "You " + action + " your friend",
+		})
+	}
 }
 
 func ManageRequest(c *gin.Context) {
