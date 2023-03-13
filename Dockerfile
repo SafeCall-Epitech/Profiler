@@ -10,10 +10,10 @@ COPY . .
 RUN ./build.sh
 # RUN ls
 
-FROM golang:1.17-alpine
-WORKDIR /root
-COPY --from=build /src/profiler .
-COPY --from=build /src/config.json .
+#FROM golang:1.17-alpine
+#WORKDIR /root
+#COPY --from=build /src/profiler .
+#COPY --from=build /src/config.json .
 # COPY --from=build /src/libzmq.so .
 # COPY --from=build /src/libzmq.so.5 .
 # COPY --from=build /src/libzmq.so.5.2.4 .
