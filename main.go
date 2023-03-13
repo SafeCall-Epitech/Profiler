@@ -38,6 +38,7 @@ func main() {
 	r.POST("/FullName/:userID/:FullName", editFullName)
 	r.POST("/PhoneNB/:userID/:PhoneNB", editPhoneNB)
 	r.POST("/Email/:userID/:email", editEmail)
+	r.POST("/delete/:userID", deleteUser)
 
 	r.POST("/friend/:userID/:dest/:action", actionFriend)
 	r.POST("/friendRequest/:userID/:dest/:action", ManageRequest)
@@ -204,5 +205,14 @@ func GetFriendsEndpoint(c *gin.Context) {
 
 	c.JSON(200, gin.H{
 		"Success ": friends,
+	})
+}
+
+func deleteUser(c *gin.Context) {
+	userID := c.Param("userID")
+	resp := deleteUserData(userID)
+
+	c.JSON(200, gin.H{
+		"Success ": resp,
 	})
 }

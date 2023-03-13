@@ -184,3 +184,46 @@ func GetFriends(uri, userID string) interface{} {
 
 	return result["Friends"]
 }
+
+// works only if the id in the profile collection and the login in the login collection are the same !
+func deleteUserProfile(uri, userID string) primitive.M {
+	//init db + err handling
+	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
+	if err != nil {
+		log.Fatal(err)
+		return nil
+	}
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	err = client.Connect(ctx)
+	if err != nil {
+		log.Fatal(err)
+		return nil
+	}
+	defer client.Disconnect(ctx)
+
+	quickstartDatabase := client.Database("userData")
+	ProfileCollection := quickstartDatabase.Collection("Profile")
+	LoginCollection := quickstartDatabase.Collection("loginInfo")
+
+	var result bson.M
+	//delete the profile colection
+	querr := ProfileCollection.FindOneAndDelete(context.TODO(), bson.D{{Key: "Id", Value: userID}}).Decode(&result)
+	if querr != nil {
+		// ErrNoDocuments means that the filter did not match any documents in the collection
+		if querr == mongo.ErrNoDocuments {
+			return nil
+		}
+		log.Fatal(err)
+	}
+
+	//delete the login collection
+	querr2 := LoginCollection.FindOneAndDelete(context.TODO(), bson.D{{Key: "login", Value: userID}}).Decode(&result)
+	if querr2 != nil {
+		// ErrNoDocuments means that the filter did not match any documents in the collection
+		if querr2 == mongo.ErrNoDocuments {
+			return nil
+		}
+		log.Fatal(err)
+	}
+	return result
+}

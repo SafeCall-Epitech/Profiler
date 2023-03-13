@@ -137,3 +137,9 @@ func getFriendsHandler(userID string) []string {
 	dest := strings.Split(str[1:len(str)-1], " ")
 	return dest[1:]
 }
+
+func deleteUserData(userID string) string {
+	uri := getCredentials()
+	_ = deleteUserProfile(uri, userID)
+	return "success"
+}
