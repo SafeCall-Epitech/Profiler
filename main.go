@@ -39,6 +39,10 @@ func main() {
 	r.POST("/PhoneNB/:userID/:PhoneNB", editPhoneNB)
 	r.POST("/Email/:userID/:email", editEmail)
 
+	r.POST("/friend/:userID/:dest/:action", actionFriend)
+	r.POST("/friendRequest/:userID/:dest/:action", ManageRequest)
+	r.GET("/friends/:userID", GetFriendsEndpoint)
+
 	r.GET("/testZMQServer", server)
 
 	r.Run(":8081")
@@ -161,5 +165,39 @@ func searchUserEndpoint(c *gin.Context) {
 
 	c.JSON(200, gin.H{
 		"Success ": resp,
+	})
+}
+
+func actionFriend(c *gin.Context) {
+	userID := c.Param("userID")
+	dest := c.Param("dest")
+	action := c.Param("action")
+
+	actionFriendHandler(userID, dest, action)
+
+	c.JSON(200, gin.H{
+		"Success ": "You " + action + " your friend",
+	})
+
+}
+
+func ManageRequest(c *gin.Context) {
+	userID := c.Param("userID")
+	dest := c.Param("dest")
+	action := c.Param("action")
+
+	actionFriendHandler(userID, dest, action)
+
+	c.JSON(200, gin.H{
+		"Success ": action + "ed",
+	})
+}
+
+func GetFriendsEndpoint(c *gin.Context) {
+	userID := c.Param("userID")
+	friends := getFriendsHandler(userID)
+
+	c.JSON(200, gin.H{
+		"Success ": friends,
 	})
 }

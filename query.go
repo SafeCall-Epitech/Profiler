@@ -35,6 +35,7 @@ func registerProfile(uri, login, email string) bool {
 		{Key: "Description", Value: "Default description"},
 		{Key: "PhoneNB", Value: "none"},
 		{Key: "Email", Value: email},
+		{Key: "Friends", Value: []string{""}},
 	})
 	return true
 }
@@ -132,4 +133,54 @@ func searchUser(uri, username string) []primitive.M {
 	}
 
 	return results
+}
+
+func addDelFriend(uri, userID, friend, action string) bool {
+	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
+	if err != nil {
+		log.Fatal(err)
+		return false
+	}
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	err = client.Connect(ctx)
+	if err != nil {
+		log.Fatal(err)
+		return false
+	}
+	defer client.Disconnect(ctx)
+
+	quickstartDatabase := client.Database("userData")
+	ProfileCollection := quickstartDatabase.Collection("Profile")
+
+	filter := bson.D{{Key: "Id", Value: userID}}
+	update := bson.D{{Key: action, Value: bson.D{{Key: "Friends", Value: friend}}}}
+	_, err = ProfileCollection.UpdateOne(ctx, filter, update)
+
+	return err == nil
+	// fmt.Printf("Matched %v documents and updated %v documents.\n", updateResult.MatchedCount, updateResult.ModifiedCount)
+
+}
+
+func GetFriends(uri, userID string) interface{} {
+	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
+	if err != nil {
+		log.Fatal(err)
+		return "false"
+	}
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	err = client.Connect(ctx)
+	if err != nil {
+		log.Fatal(err)
+		return "false"
+	}
+	defer client.Disconnect(ctx)
+
+	quickstartDatabase := client.Database("userData")
+	ProfileCollection := quickstartDatabase.Collection("Profile")
+	filter := bson.D{{Key: "Id", Value: userID}}
+	projection := bson.D{{Key: "Friends", Value: 1}}
+	var result bson.M
+	ProfileCollection.FindOne(ctx, filter, options.FindOne().SetProjection(projection)).Decode(&result)
+
+	return result["Friends"]
 }
