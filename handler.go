@@ -113,7 +113,7 @@ func actionFriendHandler(userID, dest, action string) string {
 		return "Not found"
 	} else if action == "add" {
 		addDelFriend(uri, userID, dest, "$push")
-		addDelFriend(uri, dest, "?"+userID, "$push")
+		addDelFriend(uri, dest, "?"+userID, "$pull")
 	} else if action == "rm" {
 		addDelFriend(uri, dest, userID, "$pull")
 		addDelFriend(uri, userID, dest, "$pull")
