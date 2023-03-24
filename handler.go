@@ -135,7 +135,7 @@ func getFriendsHandler(userID string) []string {
 
 	str := fmt.Sprintf("%v", result)
 	dest := strings.Split(str[1:len(str)-1], " ")
-	return dest[1:]
+	return dest
 }
 
 func deleteUserData(userID string) string {
