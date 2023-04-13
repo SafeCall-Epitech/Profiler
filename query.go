@@ -12,6 +12,23 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+type Contact struct {
+	FullName    string   `bson:"FullName"`
+	Id          string   `bson:"Id"`
+	Description string   `bson:"Description"`
+	PhoneNB     string   `bson:"PhoneNB"`
+	Email       string   `bson:"Email"`
+	Friends     []string `bson:"Friends"`
+	Agenda      []Event  `bson:"Agenda"`
+}
+
+type Event struct {
+	Guests    string `bson:"Guests"`
+	Date      string `bson:"Date"`
+	Subject   string `bson:"Subject"`
+	Confirmed bool   `bson:"Confirmed"`
+}
+
 func registerProfile(uri, login, email string) bool {
 	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
 	if err != nil {
@@ -29,14 +46,22 @@ func registerProfile(uri, login, email string) bool {
 	quickstartDatabase := client.Database("userData")
 	ProfileCollection := quickstartDatabase.Collection("Profile")
 
-	ProfileCollection.InsertOne(ctx, bson.D{
-		{Key: "FullName", Value: login},
-		{Key: "Id", Value: login},
-		{Key: "Description", Value: "Default description"},
-		{Key: "PhoneNB", Value: "none"},
-		{Key: "Email", Value: email},
-		{Key: "Friends", Value: []string{""}},
-	})
+	user := Contact{
+		FullName:    login,
+		Id:          login,
+		Description: "Default description",
+		PhoneNB:     "none",
+		Email:       "monemailbis@gmail.com",
+		Friends:     []string{},
+		Agenda:      []Event{},
+	}
+	_, err = ProfileCollection.InsertOne(context.Background(), user)
+
+	if err != nil {
+		fmt.Println("Failed to insert contact:", err)
+		return false
+	}
+
 	return true
 }
 
@@ -90,7 +115,6 @@ func getUserProfile(uri, userID string) primitive.M {
 		}
 		log.Fatal(err)
 	}
-
 	return result
 }
 
@@ -225,5 +249,95 @@ func deleteUserProfile(uri, userID string) primitive.M {
 		}
 		log.Fatal(err)
 	}
+	return result
+}
+
+func AddEvent(uri, dest string, event Event) bool {
+	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
+	if err != nil {
+		log.Fatal(err)
+		return false
+	}
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	err = client.Connect(ctx)
+	if err != nil {
+		log.Fatal(err)
+		return false
+	}
+	defer client.Disconnect(ctx)
+
+	quickstartDatabase := client.Database("userData")
+	ProfileCollection := quickstartDatabase.Collection("Profile")
+
+	filter := bson.M{"Id": dest}
+	update := bson.M{"$push": bson.M{"Agenda": event}}
+	_, err = ProfileCollection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		fmt.Println("Failed to update contact:", err)
+		return false
+	}
+
+	if err != nil {
+		fmt.Println("Failed to insert contact:", err)
+		return false
+	}
+
+	return true
+}
+
+func DelEvent(uri, dest, date string) bool {
+	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
+	if err != nil {
+		log.Fatal(err)
+		return false
+	}
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	err = client.Connect(ctx)
+	if err != nil {
+		log.Fatal(err)
+		return false
+	}
+	defer client.Disconnect(ctx)
+
+	quickstartDatabase := client.Database("userData")
+	ProfileCollection := quickstartDatabase.Collection("Profile")
+
+	filter := bson.D{{Key: "Id", Value: dest}}
+	update := bson.M{"$pull": bson.M{"Agenda": bson.M{"Date": date}}}
+	_, err = ProfileCollection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		fmt.Println("Failed to update contact:", err)
+		return false
+	}
+
+	// if result.ModifiedCount == 0 {
+	// 	fmt.Println("Event not found in Ramzy's agenda")
+	// } else {
+	// 	fmt.Println("Event deleted from Ramzy's agenda")
+	// }
+	return true
+}
+
+func listEvent(uri, user string) interface{} {
+	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
+	if err != nil {
+		log.Fatal(err)
+		return false
+	}
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	err = client.Connect(ctx)
+	if err != nil {
+		log.Fatal(err)
+		return false
+	}
+	defer client.Disconnect(ctx)
+
+	quickstartDatabase := client.Database("userData")
+	ProfileCollection := quickstartDatabase.Collection("Profile")
+	filter := bson.D{{Key: "Id", Value: user}}
+	projection := bson.D{{Key: "Agenda", Value: 1}}
+	var result bson.M
+	ProfileCollection.FindOne(ctx, filter, options.FindOne().SetProjection(projection)).Decode(&result)
+
 	return result
 }

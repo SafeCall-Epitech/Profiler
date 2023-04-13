@@ -44,6 +44,10 @@ func main() {
 	r.POST("/friendRequest/:userID/:dest/:action", ManageRequest)
 	r.GET("/friends/:userID", GetFriendsEndpoint)
 
+	r.POST("/addEvent/:guest1/:guest2/:date/:subject", addEventEndpoint)
+	r.POST("/delEvent/:guest1/:guest2/:date", delEventEndpoint)
+	r.GET("/listEvent/:userID", listEventEndpoint)
+
 	r.GET("/testZMQServer", server)
 
 	r.Run(":8081")
@@ -76,7 +80,7 @@ func createProfile(c *gin.Context) {
 	login := c.Param("login")
 	email := c.Param("email")
 	resp := buildProfile(login, email)
-	if resp != "success" {
+	if resp != "Success" {
 		c.JSON(200, gin.H{
 			"Internal error ": resp,
 		})
@@ -214,5 +218,41 @@ func deleteUser(c *gin.Context) {
 
 	c.JSON(200, gin.H{
 		"Success ": resp,
+	})
+}
+
+// FIXME Add a check to see if the guests exist
+func addEventEndpoint(c *gin.Context) {
+	guest1 := c.Param("guest1")
+	guest2 := c.Param("guest2")
+	subject := c.Param("subject")
+	date := c.Param("date")
+
+	resp := addEventHandler(guest1, guest2, subject, date)
+
+	c.JSON(200, gin.H{
+		"Success ": resp,
+	})
+}
+
+func delEventEndpoint(c *gin.Context) {
+	guest1 := c.Param("guest1")
+	guest2 := c.Param("guest2")
+	date := c.Param("date")
+
+	resp := delEventHandler(guest1, guest2, date)
+
+	c.JSON(200, gin.H{
+		"Success ": resp,
+	})
+}
+
+func listEventEndpoint(c *gin.Context) {
+	user := c.Param("userID")
+
+	a := listEventHandler(user)
+
+	c.JSON(200, gin.H{
+		"Success ": a,
 	})
 }
