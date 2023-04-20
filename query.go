@@ -29,6 +29,12 @@ type Event struct {
 	Confirmed bool   `bson:"Confirmed"`
 }
 
+type Notification struct {
+	Title   string `bson:"Title"`
+	Content string `bson:"Content"`
+	Status  bool   `bson:"Status"`
+}
+
 func registerProfile(uri, login, email string) bool {
 	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
 	if err != nil {
@@ -340,4 +346,89 @@ func listEvent(uri, user string) interface{} {
 	ProfileCollection.FindOne(ctx, filter, options.FindOne().SetProjection(projection)).Decode(&result)
 
 	return result
+}
+
+func GetNotificationsProfile(uri, userID string) interface{} {
+	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
+	if err != nil {
+		log.Fatal(err)
+		return false
+	}
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	err = client.Connect(ctx)
+	if err != nil {
+		log.Fatal(err)
+		return false
+	}
+	defer client.Disconnect(ctx)
+
+	quickstartDatabase := client.Database("userData")
+	ProfileCollection := quickstartDatabase.Collection("Profile")
+	filter := bson.D{{Key: "Id", Value: userID}}
+	projection := bson.D{{Key: "Notifications", Value: 1}}
+	var result bson.M
+	ProfileCollection.FindOne(ctx, filter, options.FindOne().SetProjection(projection)).Decode(&result)
+
+	return result
+}
+
+func AddNotification(uri, UserID string, Notification Notification) bool {
+	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
+	if err != nil {
+		log.Fatal(err)
+		return false
+	}
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	err = client.Connect(ctx)
+	if err != nil {
+		log.Fatal(err)
+		return false
+	}
+	defer client.Disconnect(ctx)
+
+	quickstartDatabase := client.Database("userData")
+	ProfileCollection := quickstartDatabase.Collection("Profile")
+
+	filter := bson.M{"Id": UserID}
+	update := bson.M{"$push": bson.M{"Notifications": Notification}}
+	_, err = ProfileCollection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		fmt.Println("Failed to update Notification:", err)
+		return false
+	}
+
+	if err != nil {
+		fmt.Println("Failed to insert Notification:", err)
+		return false
+	}
+
+	return true
+}
+
+func DelNotification(uri, UserID, Title string) bool {
+	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
+	if err != nil {
+		log.Fatal(err)
+		return false
+	}
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	err = client.Connect(ctx)
+	if err != nil {
+		log.Fatal(err)
+		return false
+	}
+	defer client.Disconnect(ctx)
+
+	quickstartDatabase := client.Database("userData")
+	ProfileCollection := quickstartDatabase.Collection("Profile")
+
+	filter := bson.D{{Key: "Id", Value: UserID}}
+	update := bson.M{"$pull": bson.M{"Agenda": bson.M{"Id": Title}}}
+	_, err = ProfileCollection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		fmt.Println("Failed to update contact:", err)
+		return false
+	}
+
+	return true
 }

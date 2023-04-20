@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -47,6 +48,10 @@ func main() {
 	r.POST("/addEvent/:guest1/:guest2/:date/:subject", addEventEndpoint)
 	r.POST("/delEvent/:guest1/:guest2/:date", delEventEndpoint)
 	r.GET("/listEvent/:userID", listEventEndpoint)
+
+	r.POST("/notification/:UserID/:Title/:Content/:Status", addNotificationEndpoint)
+	r.GET("/notification/:UserID/:Title/:Content", delNotificationEndpoint)
+	r.GET("/notification/:UserID/", GetUserNotification)
 
 	r.GET("/testZMQServer", server)
 
@@ -254,5 +259,47 @@ func listEventEndpoint(c *gin.Context) {
 
 	c.JSON(200, gin.H{
 		"Success ": a,
+	})
+}
+
+func GetUserNotification(c *gin.Context) {
+	userID := c.Param("UserID")
+	resp := GetNotification(userID)
+
+	c.JSON(200, gin.H{
+		"Success ": resp,
+	})
+}
+
+func addNotificationEndpoint(c *gin.Context) {
+	UserID := c.Param("UserID")
+	Title := c.Param("Title")
+	Content := c.Param("Content")
+	Status := c.Param("Status")
+
+	res, err := strconv.ParseBool(Status)
+
+	if err != nil {
+		c.JSON(200, gin.H{
+			"Success ": err,
+		})
+	}
+
+	resp := addNotificationHandler(UserID, Title, Content, res)
+
+	c.JSON(200, gin.H{
+		"Success ": resp,
+	})
+}
+
+func delNotificationEndpoint(c *gin.Context) {
+	UserID := c.Param("UserID")
+	Title := c.Param("Title")
+	Content := c.Param("Content")
+
+	resp := delNotificationHandler(UserID, Title, Content)
+
+	c.JSON(200, gin.H{
+		"Success ": resp,
 	})
 }
