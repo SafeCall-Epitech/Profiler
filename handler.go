@@ -217,7 +217,7 @@ func addNotificationHandler(UserID, Title, Content string, Status bool) string {
 	Notification := Notification{
 		Title:   Title,
 		Content: Content,
-		Status:  false,
+		Status:  Status,
 	}
 	err := AddNotification(uri, UserID, Notification)
 	if !err {
@@ -236,7 +236,6 @@ func delNotificationHandler(UserID, Title, Content string) string {
 
 	fmt.Println(Title, Content)
 
-	DelNotification(uri, UserID, Title)
 	DelNotification(uri, UserID, Title)
 	return "Success"
 }

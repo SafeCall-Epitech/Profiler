@@ -398,7 +398,7 @@ func AddNotification(uri, UserID string, Notification Notification) bool {
 	}
 
 	if err != nil {
-		fmt.Println("Failed to insert Notification:", err)
+		fmt.Println("Failed to insert notification:", err)
 		return false
 	}
 
@@ -423,10 +423,10 @@ func DelNotification(uri, UserID, Title string) bool {
 	ProfileCollection := quickstartDatabase.Collection("Profile")
 
 	filter := bson.D{{Key: "Id", Value: UserID}}
-	update := bson.M{"$pull": bson.M{"Agenda": bson.M{"Id": Title}}}
+	update := bson.M{"$pull": bson.M{"Notifications": bson.M{"Title": Title}}}
 	_, err = ProfileCollection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
-		fmt.Println("Failed to update contact:", err)
+		fmt.Println("Failed to update notification:", err)
 		return false
 	}
 

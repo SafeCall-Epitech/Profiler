@@ -50,8 +50,8 @@ func main() {
 	r.GET("/listEvent/:userID", listEventEndpoint)
 
 	r.POST("/notification/:UserID/:Title/:Content/:Status", addNotificationEndpoint)
-	r.GET("/notification/:UserID/:Title/:Content", delNotificationEndpoint)
-	r.GET("/notification/:UserID/", GetUserNotification)
+	r.POST("/notification/:UserID/:Title", delNotificationEndpoint)
+	r.GET("/notification/:UserID", GetUserNotification)
 
 	r.GET("/testZMQServer", server)
 
