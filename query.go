@@ -424,10 +424,16 @@ func DelNotification(uri, UserID, Title string) bool {
 
 	filter := bson.D{{Key: "Id", Value: UserID}}
 	update := bson.M{"$pull": bson.M{"Notifications": bson.M{"Title": Title}}}
-	_, err = ProfileCollection.UpdateOne(context.Background(), filter, update)
+	found, err := ProfileCollection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
-		fmt.Println("Failed to update notification:", err)
+		fmt.Println("Failed to delete notification:", err)
 		return false
+	}
+	if found.MatchedCount == 0 {
+		fmt.Println("Notification not found")
+		return false
+	} else {
+		fmt.Println("Notification deleted notifications")
 	}
 
 	return true

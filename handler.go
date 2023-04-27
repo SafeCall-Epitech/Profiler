@@ -219,11 +219,8 @@ func addNotificationHandler(UserID, Title, Content string, Status bool) string {
 		Content: Content,
 		Status:  Status,
 	}
+
 	err := AddNotification(uri, UserID, Notification)
-	if !err {
-		return "Failed to insert event"
-	}
-	err = AddNotification(uri, UserID, Notification)
 
 	if !err {
 		return "Failed to insert Notification"
