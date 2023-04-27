@@ -295,9 +295,8 @@ func addNotificationEndpoint(c *gin.Context) {
 func delNotificationEndpoint(c *gin.Context) {
 	UserID := c.Param("UserID")
 	Title := c.Param("Title")
-	Content := c.Param("Content")
 
-	resp := delNotificationHandler(UserID, Title, Content)
+	resp := delNotificationHandler(UserID, Title)
 
 	c.JSON(200, gin.H{
 		"Success ": resp,

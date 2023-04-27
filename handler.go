@@ -231,10 +231,10 @@ func addNotificationHandler(UserID, Title, Content string, Status bool) string {
 	return "Success"
 }
 
-func delNotificationHandler(UserID, Title, Content string) string {
+func delNotificationHandler(UserID, Title string) string {
 	uri := getCredentials()
 
-	fmt.Println(Title, Content)
+	fmt.Println(Title)
 
 	DelNotification(uri, UserID, Title)
 	return "Success"
