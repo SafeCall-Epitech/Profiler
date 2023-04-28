@@ -150,7 +150,7 @@ func deleteUserData(userID string) string {
 func addEventHandler(guest1, guest2, subject, date string) string {
 	uri := getCredentials()
 	event := Event{
-		Guests:    guest1 + "&" + guest2,
+		Guests:    guest1 + "+" + guest2,
 		Subject:   subject,
 		Date:      date,
 		Confirmed: false,
@@ -183,21 +183,24 @@ func listEventHandler(userID string) []Event {
 	var events []Event
 
 	test := profileFound["Agenda"]
-	a := test.(primitive.A)
 
-	for _, v := range a {
-		b := v.(primitive.M)
-		bi, _ := strconv.ParseBool(fmt.Sprint(b["Confirmed"]))
+	if test != nil {
+		a := test.(primitive.A)
+		for _, v := range a {
+			b := v.(primitive.M)
+			bi, _ := strconv.ParseBool(fmt.Sprint(b["Confirmed"]))
 
-		event := Event{
-			Guests:    fmt.Sprint(b["Guests"]),
-			Subject:   fmt.Sprint(b["Subject"]),
-			Date:      fmt.Sprint(b["Date"]),
-			Confirmed: bi,
+			event := Event{
+				Guests:    fmt.Sprint(b["Guests"]),
+				Subject:   fmt.Sprint(b["Subject"]),
+				Date:      fmt.Sprint(b["Date"]),
+				Confirmed: bi,
+			}
+			events = append(events, event)
 		}
-		events = append(events, event)
+		return events
 	}
-	return events
+	return nil
 }
 
 //Notification handling

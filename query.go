@@ -317,35 +317,11 @@ func DelEvent(uri, dest, date string) bool {
 	}
 
 	// if result.ModifiedCount == 0 {
-	// 	fmt.Println("Event not found in Ramzy's agenda")
+	// 	fmt.Println("Event not found in " + dest + ":" + date + "'s agenda")
 	// } else {
-	// 	fmt.Println("Event deleted from Ramzy's agenda")
+	// 	fmt.Println("Event deleted from " + dest + ":" + " 's agenda")
 	// }
 	return true
-}
-
-func listEvent(uri, user string) interface{} {
-	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
-	if err != nil {
-		log.Fatal(err)
-		return false
-	}
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	err = client.Connect(ctx)
-	if err != nil {
-		log.Fatal(err)
-		return false
-	}
-	defer client.Disconnect(ctx)
-
-	quickstartDatabase := client.Database("userData")
-	ProfileCollection := quickstartDatabase.Collection("Profile")
-	filter := bson.D{{Key: "Id", Value: user}}
-	projection := bson.D{{Key: "Agenda", Value: 1}}
-	var result bson.M
-	ProfileCollection.FindOne(ctx, filter, options.FindOne().SetProjection(projection)).Decode(&result)
-
-	return result
 }
 
 func GetNotificationsProfile(uri, userID string) interface{} {
