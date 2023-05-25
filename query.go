@@ -57,7 +57,7 @@ func registerProfile(uri, login, email string) bool {
 		Id:          login,
 		Description: "Default description",
 		PhoneNB:     "none",
-		Email:       "monemailbis@gmail.com",
+		Email:       email,
 		Friends:     []string{},
 		Agenda:      []Event{},
 	}
