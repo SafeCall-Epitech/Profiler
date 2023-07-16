@@ -77,22 +77,34 @@ func publishProfileUpdates(uri, endpoint, userID, data string) bool {
 		log.Fatal(err)
 		return false
 	}
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	err = client.Connect(ctx)
 	if err != nil {
 		log.Fatal(err)
 		return false
 	}
-	defer client.Disconnect(ctx)
+
+	defer func() {
+		if err := client.Disconnect(ctx); err != nil {
+			log.Fatal(err)
+		}
+	}()
 
 	quickstartDatabase := client.Database("userData")
 	ProfileCollection := quickstartDatabase.Collection("Profile")
 
 	filter := bson.D{{Key: "Id", Value: userID}}
 	update := bson.D{{Key: "$set", Value: bson.D{{Key: endpoint, Value: data}}}}
-	_, err = ProfileCollection.UpdateOne(ctx, filter, update)
+	result, err := ProfileCollection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		log.Fatal(err)
+		return false
+	}
 
-	return true
+	return result.ModifiedCount == 1
 }
 
 func getUserProfile(uri, userID string) primitive.M {
