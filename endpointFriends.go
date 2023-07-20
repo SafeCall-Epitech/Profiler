@@ -7,15 +7,15 @@ import (
 )
 
 type ActionFriendStruct struct {
-	userID string `bson:"userID"`
-	Dest   string `bson:"dest"`
-	Action string `bson:"action"`
+	UserID string `bson:"UserID"`
+	Dest   string `bson:"Dest"`
+	Action string `bson:"Action"`
 }
 
 type ManageStruct struct {
-	userID string `bson:"userID"`
-	Dest   string `bson:"dest"`
-	Action string `bson:"action"`
+	UserID string `bson:"UserID"`
+	Dest   string `bson:"Dest"`
+	Action string `bson:"Action"`
 }
 
 func actionFriend(c *gin.Context) {
@@ -24,7 +24,7 @@ func actionFriend(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	resp := actionFriendHandler(data.userID, data.Dest, data.Action)
+	resp := actionFriendHandler(data.UserID, data.Dest, data.Action)
 
 	if resp != "200" {
 		c.JSON(503, gin.H{
@@ -44,7 +44,7 @@ func ManageRequest(c *gin.Context) {
 		return
 	}
 
-	actionFriendHandler(data.userID, data.Dest, data.Action)
+	actionFriendHandler(data.UserID, data.Dest, data.Action)
 
 	c.JSON(200, gin.H{
 		"Success ": data.Action + "ed",

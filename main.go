@@ -39,16 +39,16 @@ func main() {
 	r.POST("/Email", editEmail)
 	r.POST("/delete", deleteUser)
 
-	r.POST("/friend/:userID/:dest/:action", actionFriend)
-	r.POST("/friendRequest/:userID/:dest/:action", ManageRequest)
+	r.POST("/friend", actionFriend)
+	r.POST("/friendRequest", ManageRequest)
 	r.GET("/friends/:userID", GetFriendsEndpoint)
 
 	r.POST("/addEvent", addEventEndpoint)
 	r.POST("/delEvent", delEventEndpoint)
 	r.GET("/listEvent/:userID", listEventEndpoint)
 
-	r.POST("/notification/:UserID/:Title/:Content/:Status", addNotificationEndpoint)
-	r.POST("/notification/:UserID/:Title", delNotificationEndpoint)
+	r.POST("/AddNotification", addNotificationEndpoint)
+	r.POST("/DelNotification", delNotificationEndpoint)
 	r.GET("/notification/:UserID", GetUserNotification)
 
 	r.GET("/testZMQServer", server)
