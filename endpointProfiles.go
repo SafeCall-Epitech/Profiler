@@ -61,7 +61,7 @@ func editEmail(c *gin.Context) {
 	}
 
 	resp := handleProfileEdition("Email", data.UserID, data.Data)
-	if resp != "success" {
+	if resp != "true" {
 		c.JSON(503, gin.H{
 			"Internal error ": resp,
 		})
@@ -80,7 +80,7 @@ func editPhoneNB(c *gin.Context) {
 	}
 
 	resp := handleProfileEdition("PhoneNB", data.UserID, data.Data)
-	if resp != "success" {
+	if resp != "true" {
 		c.JSON(503, gin.H{
 			"Internal error ": resp,
 		})
@@ -99,7 +99,7 @@ func editFullName(c *gin.Context) {
 	}
 
 	resp := handleProfileEdition("FullName", data.UserID, data.Data)
-	if resp != "success" {
+	if resp != "true" {
 		c.JSON(503, gin.H{
 			"Internal error ": resp,
 		})
@@ -136,7 +136,7 @@ func editDescription(c *gin.Context) {
 	}
 
 	resp := handleProfileEdition("Description", data.UserID, data.Data)
-	if resp != "success" {
+	if resp != "true" {
 		c.JSON(503, gin.H{
 			"Internal error ": resp,
 		})
