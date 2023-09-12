@@ -28,6 +28,9 @@ func handleProfileEdition(endpoint, userID, data string) string {
 	if endpoint == "Email" && len(data) > 50 {
 		return "Too long Email"
 	}
+	if endpoint == "ProfilePic" && len(data) > 150 {
+		return "Too long link"
+	}
 
 	resp := publishProfileUpdates(uri, endpoint, userID, data)
 	return strconv.FormatBool(resp)

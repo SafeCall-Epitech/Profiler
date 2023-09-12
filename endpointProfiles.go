@@ -31,6 +31,11 @@ type EditEmailNBStruct struct {
 	Data   string `bson:"Data"`
 }
 
+type EditProfilePicStruct struct {
+	UserID string `bson:"UserID"`
+	Data   string `bson:"Data"`
+}
+
 type DeleteUserStruct struct {
 	UserID string `bson:"UserID"`
 }
@@ -136,6 +141,25 @@ func editDescription(c *gin.Context) {
 	}
 
 	resp := handleProfileEdition("Description", data.UserID, data.Data)
+	if resp != "true" {
+		c.JSON(503, gin.H{
+			"Internal error ": resp,
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"Success ": "200",
+		})
+	}
+}
+
+func editProfilePic(c *gin.Context) {
+	var data EditProfilePicStruct
+	if err := c.ShouldBindJSON(&data); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	resp := handleProfileEdition("ProfilePic", data.UserID, data.Data)
 	if resp != "true" {
 		c.JSON(503, gin.H{
 			"Internal error ": resp,

@@ -20,6 +20,7 @@ type Contact struct {
 	Email       string   `bson:"Email"`
 	Friends     []string `bson:"Friends"`
 	Agenda      []Event  `bson:"Agenda"`
+	ProfilePic  string   `bson:"ProfilePic"`
 }
 
 type Event struct {
@@ -60,6 +61,7 @@ func registerProfile(uri, login, email string) bool {
 		Email:       email,
 		Friends:     []string{},
 		Agenda:      []Event{},
+		ProfilePic:  "default",
 	}
 	_, err = ProfileCollection.InsertOne(context.Background(), user)
 
