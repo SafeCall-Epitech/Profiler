@@ -28,6 +28,9 @@ func handleProfileEdition(endpoint, userID, data string) string {
 	if endpoint == "Email" && len(data) > 50 {
 		return "Too long Email"
 	}
+	if endpoint == "ProfilePic" && len(data) > 150 {
+		return "Too long link"
+	}
 
 	resp := publishProfileUpdates(uri, endpoint, userID, data)
 	return strconv.FormatBool(resp)
@@ -45,10 +48,10 @@ func getProfilehandler(userID string) Profile {
 			fmt.Sprint(profileFound["Description"]),
 			fmt.Sprint(profileFound["PhoneNB"]),
 			fmt.Sprint(profileFound["Email"]),
+			fmt.Sprint(profileFound["ProfilePic"]),
 		)
 		return dest
 	}
-
 	return Profile{}
 }
 

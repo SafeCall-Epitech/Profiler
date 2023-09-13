@@ -1,11 +1,7 @@
 package main
 
 import (
-	"fmt"
-	"time"
-
 	"github.com/gin-gonic/gin"
-	zmq "github.com/pebbe/zmq4"
 )
 
 // This function is here for test purpose with Postman
@@ -37,6 +33,7 @@ func main() {
 	r.POST("/FullName", editFullName)
 	r.POST("/PhoneNB", editPhoneNB)
 	r.POST("/Email", editEmail)
+	r.POST("/ProfilePic", editProfilePic)
 	r.POST("/delete", deleteUser)
 
 	r.POST("/friend", actionFriend)
@@ -58,24 +55,24 @@ func main() {
 
 // KEPT FOR TEST PURPOSES
 func server(c *gin.Context) {
-	fmt.Println("ready sir")
-	//  Socket to talk to clients
-	responder, _ := zmq.NewSocket(zmq.PAIR)
-	defer responder.Close()
-	// responder.Bind("ipc://test1")
-	responder.Bind("tcp://*:5555")
+	// fmt.Println("ready sir")
+	// //  Socket to talk to clients
+	// responder, _ := zmq.NewSocket(zmq.PAIR)
+	// defer responder.Close()
+	// // responder.Bind("ipc://test1")
+	// responder.Bind("tcp://*:5555")
 
-	for {
-		//  Wait for next request from client
-		msg, _ := responder.Recv(0)
-		fmt.Println("Received ", msg)
+	// for {
+	// 	//  Wait for next request from client
+	// 	msg, _ := responder.Recv(0)
+	// 	fmt.Println("Received ", msg)
 
-		//  Do some 'work'
-		time.Sleep(time.Second)
+	// 	//  Do some 'work'
+	// 	time.Sleep(time.Second)
 
-		//  Send reply back to client
-		reply := "World"
-		responder.Send(reply, 0)
-		fmt.Println("Sent ", reply)
-	}
+	// 	//  Send reply back to client
+	// 	reply := "World"
+	// 	responder.Send(reply, 0)
+	// 	fmt.Println("Sent ", reply)
+	// }
 }
