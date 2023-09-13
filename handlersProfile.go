@@ -48,10 +48,10 @@ func getProfilehandler(userID string) Profile {
 			fmt.Sprint(profileFound["Description"]),
 			fmt.Sprint(profileFound["PhoneNB"]),
 			fmt.Sprint(profileFound["Email"]),
+			fmt.Sprint(profileFound["ProfilePic"]),
 		)
 		return dest
 	}
-
 	return Profile{}
 }
 
