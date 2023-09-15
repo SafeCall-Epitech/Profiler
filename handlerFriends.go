@@ -11,7 +11,7 @@ func actionFriendHandler(userID, dest, action string) string {
 
 	if found.FullName == "" { // TODO check si il est déjà ami
 		return "Not found"
-	} else if action == "add" {
+	} else if action == "add" && !check_duplicata(userID, dest) {
 		addDelFriend(uri, userID, dest, "$push")
 		addDelFriend(uri, dest, "?"+userID, "$push")
 	} else if action == "rm" {
