@@ -42,6 +42,8 @@ func main() {
 
 	r.POST("/addEvent", addEventEndpoint)
 	r.POST("/delEvent", delEventEndpoint)
+	r.POST("/confirmEvent", ConfirmEventEndpoint)
+
 	r.GET("/listEvent/:userID", listEventEndpoint)
 
 	r.POST("/AddNotification", addNotificationEndpoint)

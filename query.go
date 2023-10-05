@@ -330,11 +330,6 @@ func DelEvent(uri, dest, date string) bool {
 		return false
 	}
 
-	// if result.ModifiedCount == 0 {
-	// 	fmt.Println("Event not found in " + dest + ":" + date + "'s agenda")
-	// } else {
-	// 	fmt.Println("Event deleted from " + dest + ":" + " 's agenda")
-	// }
 	return true
 }
 

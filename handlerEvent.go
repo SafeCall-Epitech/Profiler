@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -29,8 +30,6 @@ func addEventHandler(guest1, guest2, subject, date string) string {
 
 func delEventHandler(guest1, guest2, date string) string {
 	uri := getCredentials()
-
-	fmt.Println(guest1, date)
 
 	DelEvent(uri, guest1, date)
 	DelEvent(uri, guest2, date)
@@ -61,4 +60,21 @@ func listEventHandler(userID string) []Event {
 		return events
 	}
 	return nil
+}
+
+// FIXME Create new collection for Events
+func confirmEventHandler(e Event, status bool) string {
+	uri := getCredentials()
+	guests := strings.Split(e.Guests, "+")
+
+	DelEvent(uri, guests[0], e.Date)
+	DelEvent(uri, guests[1], e.Date)
+
+	if status == true {
+		e.Confirmed = true
+		AddEvent(uri, guests[0], e)
+		AddEvent(uri, guests[1], e)
+	}
+
+	return "Success"
 }

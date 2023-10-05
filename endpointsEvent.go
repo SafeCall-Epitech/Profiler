@@ -19,6 +19,13 @@ type DelEventStruct struct {
 	Date   string `bson:"Date"`
 }
 
+type ConfirmEventStruct struct {
+	Guests  string `bson:"Guests"`
+	Date    string `bson:"Date"`
+	Subject string `bson:"Subject"`
+	Status  bool   `bson:"Status"`
+}
+
 // FIXME Add a check to see if the guests exist
 func addEventEndpoint(c *gin.Context) {
 	var data AddEventStruct
@@ -54,5 +61,24 @@ func listEventEndpoint(c *gin.Context) {
 
 	c.JSON(200, gin.H{
 		"Success ": a,
+	})
+}
+
+func ConfirmEventEndpoint(c *gin.Context) {
+	var data ConfirmEventStruct
+	if err := c.ShouldBindJSON(&data); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	e := Event{
+		Guests:    data.Guests,
+		Date:      data.Date,
+		Subject:   data.Subject,
+		Confirmed: false,
+	}
+	resp := confirmEventHandler(e, data.Status)
+
+	c.JSON(200, gin.H{
+		"Success ": resp,
 	})
 }
