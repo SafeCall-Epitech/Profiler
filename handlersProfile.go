@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"strconv"
+	"strings"
+	s "strings"
 )
 
 func buildProfile(login, email string) string {
@@ -42,7 +44,6 @@ func getProfilehandler(userID string) Profile {
 	profileFound := getUserProfile(uri, userID)
 
 	if profileFound != nil {
-
 		dest := NewProfile(
 			fmt.Sprint(profileFound["FullName"]),
 			fmt.Sprint(profileFound["Description"]),
@@ -53,6 +54,29 @@ func getProfilehandler(userID string) Profile {
 		return dest
 	}
 	return Profile{}
+}
+
+func getFriendsFromID(userID string) []Friends {
+	uri := getCredentials()
+	var friends []Friends
+	profileFound := getUserProfile(uri, userID)
+	data := fmt.Sprint(profileFound["Friends"])
+	var tmp Friends
+	for _, item := range strings.Split(data, " ") {
+		if s.Contains(item, "Id:") {
+			tmp.Id = strings.Split(item, ":")[1]
+		}
+		if s.Contains(item, "Active:") {
+			data := strings.Split(item, ":")[1]
+			tmp.Active, _ = strconv.ParseBool(data)
+		}
+		if s.Contains(item, "Subject:") {
+			tmp.Subject = strings.Split(item, ":")[1]
+			friends = append(friends, tmp)
+		}
+	}
+
+	return friends
 }
 
 func searchUserhandler(username string) map[int]string {

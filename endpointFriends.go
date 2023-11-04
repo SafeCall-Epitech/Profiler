@@ -7,15 +7,17 @@ import (
 )
 
 type ActionFriendStruct struct {
-	UserID string `bson:"UserID"`
-	Dest   string `bson:"Dest"`
-	Action string `bson:"Action"`
+	UserID  string `bson:"UserID"`
+	Dest    string `bson:"Dest"`
+	Subject string `bson:"Subject"`
+	Action  string `bson:"Action"`
 }
 
 type ManageStruct struct {
-	UserID string `bson:"UserID"`
-	Dest   string `bson:"Dest"`
-	Action string `bson:"Action"`
+	UserID  string `bson:"UserID"`
+	Dest    string `bson:"Dest"`
+	Subject string `bson:"Subject"`
+	Action  string `bson:"Action"`
 }
 
 func actionFriend(c *gin.Context) {
@@ -24,7 +26,7 @@ func actionFriend(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	resp := actionFriendHandler(data.UserID, data.Dest, data.Action)
+	resp := AddFriendHandler(data)
 
 	if resp != "200" {
 		c.JSON(503, gin.H{
@@ -44,7 +46,7 @@ func ManageRequest(c *gin.Context) {
 		return
 	}
 
-	actionFriendHandler(data.UserID, data.Dest, data.Action)
+	acceptFriendHandler(data)
 
 	c.JSON(200, gin.H{
 		"Success ": data.Action + "ed",
@@ -53,8 +55,7 @@ func ManageRequest(c *gin.Context) {
 
 func GetFriendsEndpoint(c *gin.Context) {
 	userID := c.Param("userID")
-	friends := getFriendsHandler(userID)
-
+	friends := listFriendHandler(userID)
 	c.JSON(200, gin.H{
 		"Success ": friends,
 	})

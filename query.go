@@ -30,6 +30,12 @@ type Event struct {
 	Confirmed bool   `bson:"Confirmed"`
 }
 
+type Friends struct {
+	Id      string `bson:"Id"`
+	Subject string `bson:"Subject"`
+	Active  bool   `bson:"Active"`
+}
+
 type Notification struct {
 	Title   string `bson:"Title"`
 	Content string `bson:"Content"`
@@ -179,7 +185,7 @@ func searchUser(uri, username string) []primitive.M {
 	return results
 }
 
-func addDelFriend(uri, userID, friend, action string) bool {
+func addDelFriendAdd(uri, userID, action string, person Friends) bool {
 	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
 	if err != nil {
 		log.Fatal(err)
@@ -197,12 +203,10 @@ func addDelFriend(uri, userID, friend, action string) bool {
 	ProfileCollection := quickstartDatabase.Collection("Profile")
 
 	filter := bson.D{{Key: "Id", Value: userID}}
-	update := bson.D{{Key: action, Value: bson.D{{Key: "Friends", Value: friend}}}}
-	_, err = ProfileCollection.UpdateOne(ctx, filter, update)
-
+	update := bson.D{{Key: action, Value: bson.D{{Key: "Friends", Value: person}}}}
+	res, err := ProfileCollection.UpdateOne(ctx, filter, update)
+	fmt.Printf("Matched %v documents and updated %v documents.\n", res.MatchedCount, res.ModifiedCount)
 	return err == nil
-	// fmt.Printf("Matched %v documents and updated %v documents.\n", updateResult.MatchedCount, updateResult.ModifiedCount)
-
 }
 
 func GetFriends(uri, userID string) interface{} {
@@ -321,7 +325,6 @@ func DelEvent(uri, dest, date string) bool {
 
 	quickstartDatabase := client.Database("userData")
 	ProfileCollection := quickstartDatabase.Collection("Profile")
-
 	filter := bson.D{{Key: "Id", Value: dest}}
 	update := bson.M{"$pull": bson.M{"Agenda": bson.M{"Date": date}}}
 	_, err = ProfileCollection.UpdateOne(context.Background(), filter, update)

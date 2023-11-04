@@ -2,31 +2,109 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func actionFriendHandler(userID, dest, action string) string {
-	found := getProfilehandler(dest)
+func AddFriendHandler(data ActionFriendStruct) string {
+	found := getProfilehandler(data.Dest)
 	uri := getCredentials()
 
-	if found.FullName == "" { // TODO check si il est déjà ami
+	person0 := Friends{
+		Id:      data.Dest,
+		Subject: data.Subject,
+		Active:  true,
+	}
+	person1 := Friends{
+		Id:      data.UserID,
+		Subject: data.Subject,
+		Active:  true,
+	}
+
+	if found.FullName == "" {
 		return "Not found"
-	} else if action == "add" && !check_duplicata(userID, dest) {
-		addDelFriend(uri, userID, dest, "$push")
-		addDelFriend(uri, dest, "?"+userID, "$push")
-	} else if action == "rm" {
-		addDelFriend(uri, dest, userID, "$pull")
-		addDelFriend(uri, userID, dest, "$pull")
-		addDelFriend(uri, userID, "?"+dest, "$pull")
-	} else if action == "accept" && !check_duplicata(userID, dest) {
-		addDelFriend(uri, userID, "?"+dest, "$pull")
-		addDelFriend(uri, userID, dest, "$push")
-	} else if action == "deny" {
-		addDelFriend(uri, userID, "?"+dest, "$pull")
-		addDelFriend(uri, dest, userID, "$pull")
+	} else if data.Action == "add" && !check_duplicata(data.UserID, data.Dest) {
+		person0.Active = false
+		person1.Active = false
+		person1.Id = "?" + person1.Id
+		addDelFriendAdd(uri, data.UserID, "$push", person0)
+		addDelFriendAdd(uri, data.Dest, "$push", person1)
+	} else if data.Action == "delete" {
+		addDelFriendAdd(uri, data.UserID, "$pull", person0)
+		addDelFriendAdd(uri, data.Dest, "$pull", person1)
 	}
 
 	return "200"
+}
+
+func acceptFriendHandler(data ManageStruct) string {
+	uri := getCredentials()
+	friends := getFriendsFromID(data.UserID)
+	person0 := Friends{
+		Id:      data.Dest,
+		Subject: data.Subject,
+		Active:  true,
+	}
+	person1 := Friends{
+		Id:      data.UserID,
+		Subject: data.Subject,
+		Active:  true,
+	}
+	if isFriendshipActivable(data.Dest, friends) && data.Action == "accept" {
+		addDelFriendAdd(uri, data.UserID, "$push", person0)
+		addDelFriendAdd(uri, data.Dest, "$push", person1)
+		person0.Active = false
+		person1.Active = false
+		person0.Id = "?" + data.Dest
+		addDelFriendAdd(uri, data.UserID, "$pull", person0)
+		addDelFriendAdd(uri, data.Dest, "$pull", person1)
+		return "accepted"
+	} else if data.Action == "reject" {
+		person0.Active = false
+		person1.Active = false
+		person0.Id = "?" + data.Dest
+		addDelFriendAdd(uri, data.UserID, "$pull", person0)
+		addDelFriendAdd(uri, data.Dest, "$pull", person1)
+		return "rejected"
+	} else {
+		return "error"
+	}
+}
+
+func isFriendshipActivable(dest string, friends []Friends) bool {
+	for _, friend := range friends {
+		fmt.Println(friend)
+		if friend.Id == "?"+dest && !friend.Active {
+			return true
+		}
+	}
+	return false
+}
+
+func listFriendHandler(userID string) []Friends {
+	uri := getCredentials()
+	profileFound := getUserProfile(uri, userID)
+	var friends []Friends
+	test := profileFound["Friends"]
+
+	if test != nil {
+		a := test.(primitive.A)
+		for _, v := range a {
+			b := v.(primitive.M)
+			bi, _ := strconv.ParseBool(fmt.Sprint(b["Active"]))
+
+			friend := Friends{
+				Id:      fmt.Sprint(b["Id"]),
+				Subject: fmt.Sprint(b["Subject"]),
+				Active:  bi,
+			}
+			friends = append(friends, friend)
+		}
+		return friends
+	}
+	return nil
 }
 
 func getFriendsHandler(userID string) []string {
@@ -41,8 +119,13 @@ func getFriendsHandler(userID string) []string {
 func check_duplicata(userID, NewFriend string) bool {
 	friends := getFriendsHandler(userID)
 	for _, friend := range friends {
-		if friend == NewFriend {
-			return true
+		fmt.Println(friend, "friend")
+		if len(friend) >= 3 {
+			if friend[3:] == NewFriend {
+				return true
+			} else if friend[3:] == "?"+NewFriend {
+				return true
+			}
 		}
 	}
 	return false
