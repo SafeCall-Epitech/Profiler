@@ -26,7 +26,6 @@ type ConfirmEventStruct struct {
 	Status  bool   `bson:"Status"`
 }
 
-// FIXME Add a check to see if the guests exist
 func addEventEndpoint(c *gin.Context) {
 	var data AddEventStruct
 	if err := c.ShouldBindJSON(&data); err != nil {

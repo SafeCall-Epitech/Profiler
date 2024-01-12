@@ -69,7 +69,7 @@ func acceptFriendHandler(data ManageStruct) string {
 		addDelFriendAdd(uri, data.Dest, "$pull", person1)
 		return "rejected"
 	} else {
-		return "error"
+		return "error : DEST " + data.Dest
 	}
 }
 
@@ -95,10 +95,13 @@ func listFriendHandler(userID string) []Friends {
 			b := v.(primitive.M)
 			bi, _ := strconv.ParseBool(fmt.Sprint(b["Active"]))
 
+			friendProfile := getProfilehandler(fmt.Sprint(b["Id"]))
+
 			friend := Friends{
-				Id:      fmt.Sprint(b["Id"]),
-				Subject: fmt.Sprint(b["Subject"]),
-				Active:  bi,
+				Id:       fmt.Sprint(b["Id"]),
+				FullName: &friendProfile.FullName,
+				Subject:  fmt.Sprint(b["Subject"]),
+				Active:   bi,
 			}
 			friends = append(friends, friend)
 		}

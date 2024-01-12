@@ -31,9 +31,10 @@ type Event struct {
 }
 
 type Friends struct {
-	Id      string `bson:"Id"`
-	Subject string `bson:"Subject"`
-	Active  bool   `bson:"Active"`
+	Id       string  `bson:"Id"`
+	Subject  string  `bson:"Subject"`
+	Active   bool    `bson:"Active"`
+	FullName *string `bson:"FullName"`
 }
 
 type Notification struct {

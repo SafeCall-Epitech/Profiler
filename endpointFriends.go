@@ -46,10 +46,10 @@ func ManageRequest(c *gin.Context) {
 		return
 	}
 
-	acceptFriendHandler(data)
+	resp := acceptFriendHandler(data)
 
 	c.JSON(200, gin.H{
-		"Success ": data.Action + "ed",
+		"Success ": resp,
 	})
 }
 
